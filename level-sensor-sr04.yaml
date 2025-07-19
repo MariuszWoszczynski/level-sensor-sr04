@@ -96,7 +96,7 @@ sensor:
     id: water_distance
     unit_of_measurement: "m"
     accuracy_decimals: 2
-    update_interval: 2
+    update_interval: 2s
     filters:
       - median:
           window_size: 5
