@@ -90,30 +90,30 @@ sensor:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"
-
-  - platform: "jsn_sr04t"        # sensor w metrach 
-    name: "Level - [m]"                                 
-    unit_of_measurement: 'm'
+    
+  - platform: "jsn_sr04t"
+    name: "Distance [m]"
+    id: water_distance
+    unit_of_measurement: "m"
     accuracy_decimals: 2
-    update_interval: 2s
+    update_interval: 2
     filters:
       - median:
           window_size: 5
           send_every: 5
           send_first_at: 1
 
-#  - platform: "jsn_sr04t"         # sensor w % 
-#    update_interval: 2s
-#    name: "Level [%]"                                  
-#    unit_of_measurement: '%'
-#    accuracy_decimals: 0
-#    filters:
-#      - median:
-#          window_size: 5
-#          send_every: 5
-#          send_first_at: 1
-#      - calibrate_linear:         # KALIBRACJA
-#        - 0.25 -> 100             # odległość w [m] dla 100%   UWAGA!!! Zakres działania czujnika od 25cm!!!!!
-#        - 1.00 -> 0               # odległość w [m] dla 0%
-#      - round: 0
+  - platform: template
+    name: "Water Level [%]"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    lambda: |-
+      const float max_distance = 0.7;   // Distance at empty tank (m)
+      const float min_distance = 0.3;   // Distance at full tank (m)
+      float distance = id(water_distance).state;
+      float percent = ((max_distance - distance) / (max_distance - min_distance)) * 100.0;
+      if (percent > 100.0) return 100.0;
+      if (percent < 0.0) return 0.0;
+      return percent;
+    update_interval: 2s
 
