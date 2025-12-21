@@ -98,6 +98,8 @@ sensor:
     accuracy_decimals: 2
     update_interval: 2s
     filters:
+      - filter_out: 6.0
+      - filter_out: 0.0
       - median:
           window_size: 5
           send_every: 5
