@@ -60,7 +60,8 @@ uart:
   tx_pin: GPIO33
   rx_pin: GPIO25
   baud_rate: 9600
-
+  id: uart_bus
+  
 button:
   # Restart the ESP
   - platform: restart
@@ -94,10 +95,11 @@ sensor:
   - platform: "jsn_sr04t"
     name: "Distance [m]"
     id: water_distance
+    uart_id: uart_bus
     unit_of_measurement: "m"
     accuracy_decimals: 2
-    update_interval: 2s
-    filters:
+    update_interval: 2s                             # Here you set how often the sensor should be read.
+    filters:                                        # here you set the filters: https://esphome.io/components/sensor/#sensor-filters
       - filter_out: 6.0
       - filter_out: 0.0
       - median:
@@ -105,13 +107,13 @@ sensor:
           send_every: 5
           send_first_at: 1
 
-  - platform: template
+  - platform: template                              # Distance conversion section to %
     name: "Water Level [%]"
     unit_of_measurement: "%"
     accuracy_decimals: 0
     lambda: |-
-      const float max_distance = 0.7;   // Distance at empty tank (m)
-      const float min_distance = 0.3;   // Distance at full tank (m)
+      const float max_distance = 0.7;               // Distance at empty tank (m)
+      const float min_distance = 0.3;               // Distance at full tank (m)
       float distance = id(water_distance).state;
       float percent = ((max_distance - distance) / (max_distance - min_distance)) * 100.0;
       if (percent > 100.0) return 100.0;
