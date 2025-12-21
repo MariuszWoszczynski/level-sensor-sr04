@@ -102,6 +102,9 @@ sensor:
     filters:                                        # here you set the filters: https://esphome.io/components/sensor/#sensor-filters
       - filter_out: 6.0
       - filter_out: 0.0
+      - clamp:
+          min_value: 0.25                           # Limiting the minimum measured value to the factory minimum of the ultrasonic sensor
+          max_value: 1.10                           # Maximum measurement value limit. Set 10% more than the maximum target distance measured.
       - median:
           window_size: 5
           send_every: 5
@@ -112,8 +115,8 @@ sensor:
     unit_of_measurement: "%"
     accuracy_decimals: 0
     lambda: |-
-      const float max_distance = 0.7;               // Distance at empty tank (m)
-      const float min_distance = 0.3;               // Distance at full tank (m)
+      const float max_distance = 1.00;               // Distance at empty tank (m)
+      const float min_distance = 0.30;               // Distance at full tank (m)
       float distance = id(water_distance).state;
       float percent = ((max_distance - distance) / (max_distance - min_distance)) * 100.0;
       if (percent > 100.0) return 100.0;
